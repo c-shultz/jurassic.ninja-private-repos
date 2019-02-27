@@ -1,6 +1,19 @@
 # Jurassic Ninja Private Repos
 Experimental extension for [Jurassic Ninja](https://github.com/Automattic/jurassic.ninja/) that adds the ability to add 1 or more WordPress plugins (from private GitHub repositories) to ephemeral sites.
 
+## How it works
+
+This extension uses the WordPress hooks defined in Jurassic Ninja to add WordPress plugins to a newly created sites. When a new site is created, a query parameter (`jn_pr_repos`) can be provided which defindes private repo information for plugins that should be added to the new site.
+
+### Processs:
+1. Jurassic Ninja master server creates remote site.
+1. If `jn_pr_repos` parameter is present, this extension will:
+    1. Clone repository branch from GitHub servers
+    1. Archive plugin files as a zip file.
+    1. Upload plugin archive to newly created remote site.
+    1. Execute plugin build on remote site.
+    1. Activate plugin on remote site using WP CLI.
+1. Jurassic Ninja finishes provisioning site and the user can access the newly created ephemeral site.
 
 
 ## Setup

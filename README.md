@@ -50,5 +50,7 @@ The final url after encoding would be: `yourjurassicsite.ninja/create?=%5B%0A%09
 
 ## Major Known issues/limitations
 
-- Error handling and debug logging is limited
-- The only `build` option is to use `npm run` build. This will not be useful with many plugins.
+- Directly including JSON data in the URL is not a great interface. This would be a lot better as a form that could be filled out on the Jurassic Ninja site.
+- Error handling and debug logging is limited.
+- The only `build` option is to use `npm run` build. This will not be useful for some plugins.
+- More progress reporting would be very useful. Plugin download/build can take quite a bit of time. It's hard to know if Jurassic Ninja has failed or if it's just taking a long time.

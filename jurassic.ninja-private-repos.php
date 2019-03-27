@@ -49,6 +49,11 @@ function plugin_settings ( $options_page ) {
 			'title' => __( 'GitHub Personal Access Token', 'jurassic-ninja' ),
 			'type'  => 'text',
 		],
+		'allowed_private_repos' => [
+			'id'    => 'allowed_private_repos',
+			'title' => __( 'Allowed Private Repo Slugs (CSV)', 'jurassic-ninja' ),
+			'type'  => 'text',
+		],
 	];
 	$settings = [
 		'title' => __( 'Private Repositories', 'jurassic-ninja' ),
@@ -118,6 +123,12 @@ function transfer_private_repos( &$app, $user, $php_version, $domain, $wordpress
 	}
 }
 
+// Check if repo name is in the list of allowed names.
+function in_allowed_repos( $repo_name ) {
+	$allowed_repos = array_map( 'trim', explode( ',', \jn\settings( 'allowed_private_repos' ) ) );
+	return in_array( $repo_name, $allowed_repos );
+}
+
 // Upload source_filename to the home directory of server @ $domain
 function upload_file_to_jn( $source_filename, $dest_filename, $domain, $username, $password) {
 	$run = "SSHPASS=$password sshpass -e scp -o StrictHostKeyChecking=no $source_filename $username@$domain:$dest_filename";
@@ -137,6 +148,16 @@ function upload_file_to_jn( $source_filename, $dest_filename, $domain, $username
 
 // Download repo with git, archive it, and return temporary file location.
 function get_repo_archive( $repo ) {
+	if ( ! in_allowed_repos( $repo['name'] ) ) {
+		\jn\debug( '%s not in the list of allowed repos.',
+			$repo['name']
+		);
+		return new \WP_Error(
+			'allowed_repo_fail',
+			'Repo name not in whitelist'
+		);
+	}
+
 	$gh_username = \jn\settings( 'gh_username' );
 	$gh_password = \jn\settings( 'gh_pat' );
 	$sys_tmp     = sys_get_temp_dir();

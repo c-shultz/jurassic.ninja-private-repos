@@ -23,10 +23,42 @@ function init() {
 
 	// Download repos to local server and push them to new site.
 	add_action( 'jurassic_ninja_create_app', 'jn_pr\transfer_private_repos', 999, 6 );
+}
 
+function admin_init() {
+	add_filter( 'jurassic_ninja_settings_options_page', 'jn_pr\plugin_settings', 1 );
 }
 
 add_action( 'jurassic_ninja_init', 'jn_pr\init', 10, 2 );
+add_action( 'jurassic_ninja_admin_init', 'jn_pr\admin_init', 10, 2 );
+
+/**
+ * Add private repo settings to JN.
+ *
+ * @return array Array of options
+ */
+function plugin_settings ( $options_page ) {
+	$fields = [
+		'gh_username' => [
+			'id'    => 'gh_username',
+			'title' => __( 'GitHub Username', 'jurassic-ninja' ),
+			'type'  => 'text',
+		],
+		'gh_pat' => [
+			'id'    => 'gh_pat',
+			'title' => __( 'GitHub Personal Access Token', 'jurassic-ninja' ),
+			'type'  => 'text',
+		],
+	];
+	$settings = [
+		'title' => __( 'Private Repositories', 'jurassic-ninja' ),
+		'text' => '<p>' . __( 'Configure private plugin repository access.', 'jurassic-ninja' ) . '</p>',
+		'fields' => $fields,
+	];
+
+	$options_page[ SETTINGS_KEY ]['sections']['private_repos'] = $settings;
+	return $options_page;
+}
 
 /**
  * Get array of repos from which plugins should be installed on the remote site.
@@ -105,8 +137,8 @@ function upload_file_to_jn( $source_filename, $dest_filename, $domain, $username
 
 // Download repo with git, archive it, and return temporary file location.
 function get_repo_archive( $repo ) {
-	$gh_username = JN_PR_GH_USERNAME;
-	$gh_password = JN_PR_GH_PASSWORD;
+	$gh_username = \jn\settings( 'gh_username' );
+	$gh_password = \jn\settings( 'gh_pat' );
 	$sys_tmp     = sys_get_temp_dir();
 	$tmp_dir     = exec( "mktemp -d" );
 	$clone_url   = "https://$gh_username:$gh_password@{$repo['url']}/{$repo['name']}";

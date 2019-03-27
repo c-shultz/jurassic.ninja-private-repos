@@ -22,11 +22,8 @@ This extension uses the WordPress hooks defined in Jurassic Ninja to add WordPre
 1. Install `Jurassic Ninja Private Repos` on your WordPress site.
    1. Clone this repo to `plugins` directory
    1. Activate
-1. Define GitHub username and password for private repo access in `wp_config.php`:
-```php
-define( 'JN_PR_GH_USERNAME', 'your_name' );
-define( 'JN_PR_GH_PASSWORD', 'abc123' );
-```
+1. Define GitHub username and password for private repo access in in setttings at `Jurassic Ninja` > `Settings` > `Private Repositories`
+
 GitHub username and password can be a standard user, or you can use a Personal Access token: https://help.github.com/en/articles/creating-a-personal-access-token-for-the-command-line
 
 ## Use
